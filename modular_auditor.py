@@ -34,3 +34,11 @@ def calculate_tax(amount):
     Takes a delivery amount and returns the tax (10% of that specific delivery).
     """
     return amount * 0.10
+
+def generate_report(total_units, failed_attempts):
+    """
+    A dedicated function to print the final summary.
+    """
+    print("\n--- Audit Summary Report ---")
+    print(f"Total Units Processed: {total_units}")
+    print(f"Number of Failed/Rejected Entries: {failed_attempts}")
