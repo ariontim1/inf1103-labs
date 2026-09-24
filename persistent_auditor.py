@@ -1,3 +1,32 @@
+import os
+
+FILENAME = "inventory.txt"
+
+def load_inventory(filename=FILENAME):
+    """
+    Reads previously saved transaction history from inventory.txt.
+    Returns a list of valid transaction integers.
+    If the file does not exist, returns an empty list without error.
+    """
+    history = []
+    if not os.path.exists(filename):
+        return history
+
+    try:
+        with open(filename, "r") as file:
+            for line in file:
+                line = line.strip()
+                # Skip header/total lines if present
+                if line and not line.startswith("TOTAL:"):
+                    try:
+                        history.append(int(line))
+                    except ValueError:
+                        pass
+    except Exception as e:
+        print(f"Error reading {filename}: {e}")
+
+    return history
+
 def get_valid_input():
     """
     Handles the prompt, input validation, and business rules.
