@@ -89,9 +89,14 @@ def generate_report(history, failed_attempts):
     print(f"Number of Failed/Rejected Entries: {failed_attempts}")
 
 def main():
-    # Initialize the inventory and counters to zero at the start
-    total_inventory = 0
+    # Load History from startup
+    history = load_inventory()
     failed_entries = 0
+
+    if history:
+        print(f"Loaded {len(history)} previous transaction(s). Starting Total: {sum(history)} units.\n")
+    else:
+        print("No prior inventory data found. Starting fresh.\n")
 
     # Run in a continuous loop
     while True:
@@ -99,6 +104,7 @@ def main():
 
         # Route 1: User requested to exit
         if result == 'quit':
+            save_inventory(history)
             break
 
         # Route 2: Input was bad/negative (Increment failed entries counter)
@@ -109,21 +115,25 @@ def main():
         # Route 3: Input is valid
         else:
             stock_quantity = result
+
+            # Track every valid transaction amount in history list
+            history.append(stock_quantity)
             
             # Calculate and display the tax for this specific delivery
             tax = calculate_tax(stock_quantity)
             print(f"Delivery tax (10%): {tax:.2f}")
 
             # Update the state of our running total inventory
-            total_inventory = process_delivery(total_inventory, stock_quantity)
+            total_inventory = sum(history)
 
             # Trigger Overstock Alert: If total inventory exceeds 500, alert and break immediately
             if total_inventory > 500:
                 print(f"ALERT: Overstock limits exceeded! Total inventory is over 500 units ({total_inventory}).")
+                save_inventory(history)
                 break
 
     # After exiting the loop, print the final summary statistics
-    generate_report(total_inventory, failed_entries)
+    generate_report(history, failed_entries)
 
 
 # This line ensures the program executes cleanly when you run the script file
