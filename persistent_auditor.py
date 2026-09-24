@@ -27,6 +27,20 @@ def load_inventory(filename=FILENAME):
 
     return history
 
+def save_inventory(history, filename=FILENAME):
+    """
+    Saves the full list of transaction amounts and final total to inventory.txt.
+    """
+    try:
+        total_units = sum(history)
+        with open(filename, "w") as file:
+            for item in history:
+                file.write(f"{item}\n")
+            file.write(f"TOTAL: {total_units}\n")
+        print(f"Inventory successfully saved to {filename}")
+    except Exception as e:
+        print(f"Error saving to {filename}: {e}")
+
 def get_valid_input():
     """
     Handles the prompt, input validation, and business rules.
@@ -64,11 +78,13 @@ def calculate_tax(amount):
     """
     return amount * 0.10
 
-def generate_report(total_units, failed_attempts):
+def generate_report(history, failed_attempts):
     """
     A dedicated function to print the final summary.
     """
+    total_units = sum(history)
     print("\n--- Audit Summary Report ---")
+    print(f"Transaction History: {history}")
     print(f"Total Units Processed: {total_units}")
     print(f"Number of Failed/Rejected Entries: {failed_attempts}")
 
