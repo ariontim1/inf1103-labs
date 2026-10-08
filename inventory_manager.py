@@ -39,3 +39,4 @@ def load_inventory(filename=FILENAME):
     save_inventory(inventory, filename)
     print(f"{filename} initialized with default items.")
     return inventory
+
