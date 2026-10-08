@@ -33,53 +33,92 @@ def save_inventory(inventory, filename=FILENAME):
     except Exception as e:
         print(f"Error saving to {filename}: {e}")
 
-def get_valid_input():
-    """
-    Handles the prompt, input validation, and business rules.
-    Returns a valid integer, a "quit" signal, or None for invalid inputs.
-    """
-    user_input = input("Enter a stock quantity (or type 'quit' to exit): ").strip()
-
-    # Check if the user wants to exit
-    if user_input.lower() == 'quit':
-        return 'quit'
-
-    # Enforce business rules: Reject negative numbers
-    if user_input.startswith('-') and user_input[1:].isdigit():
-        print("Error: Negative numbers are not allowed.")
-        return None
-
-    # Handle invalid input: Reject strings/decimals using .isdigit()
-    elif not user_input.isdigit():
-        print("Error: Invalid input. Please enter a valid whole number.")
-        return None
-
-    # Accept stock values as integers
+def display_all(inventory):
+    """Displays all products stored in the inventory dictionary."""
+    print("\nCurrent Inventory")
+    print("-" * 40)
+    if not inventory:
+        print("Inventory is currently empty.")
     else:
-        return int(user_input)
+        for product_id, details in inventory.items():
+            print(
+                f"ID: {product_id} | Name: {details['name']} | "
+                f"Price: ${details['price']:.2f} | Stock: {details['stock']}"
+            )
+    print("-" * 40)
 
-def process_delivery(current_total, new_value):
-    """
-    Calculates the new total and returns it.
-    """
-    return current_total + new_value
+def add_product(inventory):
+    """Prompts for new product attributes and adds it to the inventory dictionary."""
+    print("\nAdd New Product")
+    product_id = input("Product ID: ").strip()
 
-def calculate_tax(amount):
-    """
-    Takes a delivery amount and returns the tax (10% of that specific delivery).
-    """
-    return amount * 0.10
+    if product_id in inventory:
+        print("Error: Product ID already exists.")
+        return
 
-def generate_report(history, failed_attempts):
-    """
-    A dedicated function to print the final summary.
-    """
-    total_units = sum(history)
-    print("\n--- Audit Summary Report ---")
-    print(f"Transaction History: {history}")
-    print(f"Total Units Processed: {total_units}")
-    print(f"Number of Failed/Rejected Entries: {failed_attempts}")
+    name = input("Product Name: ").strip()
 
+    try:
+        price = float(input("Price: "))
+        stock = int(input("Stock Quantity: "))
+    except ValueError:
+        print("Invalid price or stock quantity input.")
+        return
+
+    inventory[product_id] = {"name": name, "price": price, "stock": stock}
+    print("\nProduct added successfully!")
+
+
+def update_stock(inventory):
+    """Updates the stock quantity of an existing product."""
+    print("\nUpdate Stock")
+    product_id = input("Enter Product ID: ").strip()
+
+    if product_id in inventory:
+        product = inventory[product_id]
+        print("\nProduct Found:")
+        print(f"Name: {product['name']}")
+        print(f"Current Stock: {product['stock']}\n")
+
+        try:
+            new_stock = int(input("New Stock Quantity: "))
+            product["stock"] = new_stock
+            print("\nStock updated successfully!")
+        except ValueError:
+            print("Error: Stock must be a valid integer.")
+    else:
+        print("\nProduct not found.")
+
+
+def search_product(inventory):
+    """Searches and displays a specific product by its ID."""
+    print("\nSearch Product")
+    product_id = input("Enter Product ID: ").strip()
+
+    if product_id in inventory:
+        product = inventory[product_id]
+        print("\nProduct Found")
+        print("-" * 40)
+        print(f"ID: {product_id}")
+        print(f"Name: {product['name']}")
+        print(f"Price: ${product['price']:.2f}")
+        print(f"Stock: {product['stock']}")
+    else:
+        print("\nProduct not found.")
+
+
+def display_menu():
+    """Prints the main user interface menu options."""
+    print("\n--------- MENU ---------")
+    print("1. Display All Products")
+    print("2. Add Product")
+    print("3. Update Stock")
+    print("4. Search Product")
+    print("5. Save Inventory")
+    print("6. Exit")
+    print("------------------------")
+
+    
 def main():
     # Load History from startup
     inventory = load_inventory()
