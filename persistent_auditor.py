@@ -1,31 +1,28 @@
+import json
 import os
 
-FILENAME = "inventory.txt"
+FILENAME = "inventory.json"
+
 
 def load_inventory(filename=FILENAME):
-    """
-    Reads previously saved transaction history from inventory.txt.
-    Returns a list of valid transaction integers.
-    If the file does not exist, returns an empty list without error.
-    """
-    history = []
-    if not os.path.exists(filename):
-        return history
+    """Loads inventory data from inventory.json if present, or sets default products."""
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r") as file:
+                inventory = json.load(file)
+                print(f"{filename} found.")
+                print("Inventory loaded successfully.")
+                return inventory
+        except Exception as e:
+            print(f"Error loading {filename}: {e}")
 
-    try:
-        with open(filename, "r") as file:
-            for line in file:
-                line = line.strip()
-                # Skip header/total lines if present
-                if line and not line.startswith("TOTAL:"):
-                    try:
-                        history.append(int(line))
-                    except ValueError:
-                        pass
-    except Exception as e:
-        print(f"Error reading {filename}: {e}")
-
-    return history
+    # Initial default products if inventory.json does not exist
+    print(f"{filename} not found. Initializing with default products.")
+    return {
+        "P001": {"name": "Laptop", "price": 1200.00, "stock": 15},
+        "P002": {"name": "Mouse", "price": 25.50, "stock": 40},
+        "P003": {"name": "Keyboard", "price": 45.00, "stock": 25},
+    }
 
 def save_inventory(history, filename=FILENAME):
     """
