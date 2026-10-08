@@ -24,17 +24,12 @@ def load_inventory(filename=FILENAME):
         "P003": {"name": "Keyboard", "price": 45.00, "stock": 25},
     }
 
-def save_inventory(history, filename=FILENAME):
-    """
-    Saves the full list of transaction amounts and final total to inventory.txt.
-    """
+def save_inventory(inventory, filename=FILENAME):
+    """Saves the current inventory dictionary to inventory.json."""
     try:
-        total_units = sum(history)
         with open(filename, "w") as file:
-            for item in history:
-                file.write(f"{item}\n")
-            file.write(f"TOTAL: {total_units}\n")
-        print(f"Inventory successfully saved to {filename}")
+            json.dump(inventory, file, indent=4)
+        print(f"Inventory saved successfully to {filename}.")
     except Exception as e:
         print(f"Error saving to {filename}: {e}")
 
@@ -87,7 +82,7 @@ def generate_report(history, failed_attempts):
 
 def main():
     # Load History from startup
-    history = load_inventory()
+    inventory = load_inventory()
     failed_entries = 0
 
     if history:
