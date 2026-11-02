@@ -1,94 +1,99 @@
 from abc import ABC, abstractmethod
 
-# 4. Interfaces using abstract base classes[cite: 18]
+
 class CanBeShipped(ABC):
     @abstractmethod
     def calculate_shipping_cost(self) -> float:
-        """Contract for calculating shipping cost based on product characteristics."""
+        """Interface method for calculating shipping cost."""
         pass
 
 
-# 3. Convert Product into an abstract class[cite: 17]
 class Product(ABC):
     def __init__(self, product_id, name, price, stock):
         self._product_id = product_id
-        self.name = name
+        self._name = name
         self._price = float(price)
-        self.stock = int(stock)
+        self._stock = int(stock)
 
     @property
     def product_id(self):
         return self._product_id
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def stock(self):
+        return self._stock
+
+    @stock.setter
+    def stock(self, value):
+        self._stock = int(value)
 
     def update_stock(self, new_stock):
         """Updates the stock quantity of the product."""
         self.stock = int(new_stock)
 
     def display_information(self):
-        """Displays base product details."""
+        """Displays base product details matching UML design."""
         print(
-            f"ID: {self._product_id} | Name: {self.name} | "
-            f"Price: ${self._price:.2f} | Stock: {self.stock}"
+            f"ID: {self._product_id} | Name: {self._name} | "
+            f"Price: ${self._price:.2f} | Stock: {self._stock}"
         )
 
     @abstractmethod
     def get_fulfilment_info(self) -> str:
-        """Abstract method forcing subclasses to define fulfillment behavior[cite: 17]."""
+        """Abstract method defining fulfillment behavior."""
         pass
 
-    @abstractmethod
     def to_dict(self) -> dict:
         """Converts Product object back to a dictionary for JSON saving."""
-        pass
+        return {
+            "name": self._name,
+            "price": self._price,
+            "stock": self._stock
+        }
 
 
-# 1.2 & 2.1 Physical Product class with method overriding[cite: 16, 17]
 class PhysicalProduct(Product, CanBeShipped):
     def __init__(self, product_id, name, price, stock, weight):
         super().__init__(product_id, name, price, stock)
-        self.weight = float(weight)
+        self._weight = float(weight)
 
     def display_information(self):
-        """Overrides display_information using super() to reuse parent behavior[cite: 17]."""
         super().display_information()
-        print(f"  -> Type: Physical Product | Weight: {self.weight} kg")
+        print(f"  -> Type: Physical Product | Weight: {self._weight} kg")
 
     def get_fulfilment_info(self) -> str:
-        return "Product requires physical shipping and handling."
+        return "Product requires physical shipping."
 
     def calculate_shipping_cost(self) -> float:
-        """Calculates shipping cost based on weight[cite: 18]."""
-        return round(2.00 + (1.50 * self.weight), 2)
+        return round(2.00 + (1.50 * self._weight), 2)
 
     def to_dict(self) -> dict:
-        return {
-            "type": "physical",
-            "name": self.name,
-            "price": self._price,
-            "stock": self.stock,
-            "weight": self.weight
-        }
+        d = super().to_dict()
+        d.update({"type": "physical", "weight": self._weight})
+        return d
 
 
-# 1.3 & 2.1 Digital Product class with method overriding[cite: 16, 17]
 class DigitalProduct(Product):
     def __init__(self, product_id, name, price, stock, download_size):
         super().__init__(product_id, name, price, stock)
-        self.download_size = float(download_size)
+        self._download_size = float(download_size)
 
     def display_information(self):
-        """Overrides display_information using super() to reuse parent behavior[cite: 17]."""
         super().display_information()
-        print(f"  -> Type: Digital Product | Download Size: {self.download_size} MB")
+        print(f"  -> Type: Digital Product | Download Size: {self._download_size} MB")
 
     def get_fulfilment_info(self) -> str:
-        return "Product is delivered digitally via download link."
+        return "Product is delivered digitally."
 
     def to_dict(self) -> dict:
-        return {
-            "type": "digital",
-            "name": self.name,
-            "price": self._price,
-            "stock": self.stock,
-            "download_size": self.download_size
-        }
+        d = super().to_dict()
+        d.update({"type": "digital", "download_size": self._download_size})
+        return d

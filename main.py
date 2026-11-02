@@ -3,7 +3,6 @@ from product import PhysicalProduct, DigitalProduct
 
 
 def display_menu():
-    """Prints the main user interface menu options."""
     print("\n--------- MENU ---------")
     print("1. Display All Products")
     print("2. Add Product")
@@ -16,7 +15,7 @@ def display_menu():
 
 def main():
     print("=" * 45)
-    print("INVENTORY MANAGEMENT SYSTEM (LAB 7)")
+    print("INVENTORY MANAGEMENT SYSTEM (LAB 7 TARGET DESIGN)")
     print("=" * 45 + "\n")
 
     inventory = Inventory()
@@ -47,19 +46,16 @@ def main():
                 else:
                     print("Invalid product type selection. Product not added.")
             except ValueError:
-                print("Invalid input for numerical fields (price, stock, weight, or size).")
+                print("Invalid input for numerical fields.")
         elif choice == "3":
             print("\nUpdate Stock")
             product_id = input("Enter Product ID: ").strip()
             product = inventory.get_product(product_id)
             if product:
-                print("\nProduct Found:")
-                print(f"Name: {product.name}")
-                print(f"Current Stock: {product.stock}\n")
+                print(f"\nProduct Found: {product.name} (Current Stock: {product.stock})")
                 try:
                     new_stock = int(input("New Stock Quantity: "))
-                    product.update_stock(new_stock)
-                    inventory.save_to_file()
+                    inventory.update_stock(product_id, new_stock)
                     print("\nStock updated successfully!")
                 except ValueError:
                     print("Error: Stock must be a valid integer.")
@@ -70,12 +66,11 @@ def main():
             inventory.search_product(product_id)
         elif choice == "5":
             print("\nSaving inventory...")
-            inventory.save_to_file()
+            inventory.save()
         elif choice == "6":
             print("\nSaving inventory before exit...")
-            inventory.save_to_file()
-            print("\nThank you for using Inventory Management System.")
-            print("Program terminated.")
+            inventory.save()
+            print("\nProgram terminated.")
             break
         else:
             print("Invalid option. Please enter a number from 1 to 6.")

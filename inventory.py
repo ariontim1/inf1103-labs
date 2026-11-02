@@ -7,61 +7,61 @@ FILENAME = "inventory.json"
 
 class Inventory:
     def __init__(self, filename=FILENAME):
-        self._products = {}
+        self._products = []  # Stored as a list matching target UML design
         self.filename = filename
-        self.load_from_file()
+        self.load()
 
-    def load_from_file(self):
-        """Loads inventory data from JSON file and restores correct subclasses[cite: 19]."""
+    def load(self):
+        """Loads inventory data from JSON file or initializes default products."""
         if os.path.exists(self.filename):
             try:
                 with open(self.filename, "r") as file:
                     data = json.load(file)
                     if data:
-                        self._products = {}
+                        self._products = []
                         for pid, details in data.items():
-                            prod_type = details.get("type")
+                            prod_type = details.get("type", "physical")
                             if prod_type == "physical":
-                                self._products[pid] = PhysicalProduct(
+                                prod = PhysicalProduct(
                                     product_id=pid,
                                     name=details["name"],
                                     price=details["price"],
                                     stock=details["stock"],
-                                    weight=details["weight"]
+                                    weight=details.get("weight", 1.0)
                                 )
-                            elif prod_type == "digital":
-                                self._products[pid] = DigitalProduct(
+                            else:
+                                prod = DigitalProduct(
                                     product_id=pid,
                                     name=details["name"],
                                     price=details["price"],
                                     stock=details["stock"],
-                                    download_size=details["download_size"]
+                                    download_size=details.get("download_size", 100.0)
                                 )
-                        print(f"{self.filename} found.")
-                        print("Inventory loaded successfully with product types.")
+                            self._products.append(prod)
+                        print(f"{self.filename} found and loaded successfully.")
                         return
             except Exception as e:
                 print(f"Error loading {self.filename}: {e}")
 
         # Initialize default products if file doesn't exist or is empty
         default_data = {
-            "P001": {"type": "physical", "name": "Gaming Laptop", "price": 1200.00, "stock": 15, "weight": 2.5},
-            "P002": {"type": "digital", "name": "Antivirus License", "price": 45.50, "stock": 100, "download_size": 250.0},
-            "P003": {"type": "physical", "name": "Mechanical Keyboard", "price": 85.00, "stock": 25, "weight": 0.9},
+            "P001": {"type": "physical", "name": "Laptop", "price": 1200.00, "stock": 15, "weight": 2.5},
+            "P002": {"type": "digital", "name": "OS License", "price": 150.00, "stock": 50, "download_size": 4500.0},
+            "P003": {"type": "physical", "name": "Keyboard", "price": 45.00, "stock": 25, "weight": 0.8},
         }
-        self._products = {}
+        self._products = []
         for pid, details in default_data.items():
             if details["type"] == "physical":
-                self._products[pid] = PhysicalProduct(pid, details["name"], details["price"], details["stock"], details["weight"])
-            elif details["type"] == "digital":
-                self._products[pid] = DigitalProduct(pid, details["name"], details["price"], details["stock"], details["download_size"])
-        
-        self.save_to_file()
-        print(f"{self.filename} initialized with default typed items.")
+                prod = PhysicalProduct(pid, details["name"], details["price"], details["stock"], details["weight"])
+            else:
+                prod = DigitalProduct(pid, details["name"], details["price"], details["stock"], details["download_size"])
+            self._products.append(prod)
+        self.save()
+        print(f"{self.filename} initialized with default items.")
 
-    def save_to_file(self):
-        """Saves current inventory collection into JSON file preserving product types[cite: 19]."""
-        data = {pid: p.to_dict() for pid, p in self._products.items()}
+    def save(self):
+        """Saves current inventory collection into JSON file."""
+        data = {p.product_id: p.to_dict() for p in self._products}
         try:
             with open(self.filename, "w") as file:
                 json.dump(data, file, indent=4)
@@ -70,27 +70,39 @@ class Inventory:
             print(f"Error saving to {self.filename}: {e}")
 
     def add_product(self, product):
-        """Adds a new Product subclass object to the inventory[cite: 19]."""
-        if product.product_id in self._products:
+        """Adds a new Product object to the inventory list."""
+        if self.get_product(product.product_id):
             print("Error: Product ID already exists.")
             return False
-        self._products[product.product_id] = product
+        self._products.append(product)
         print("\nProduct added successfully!")
-        self.save_to_file()
+        self.save()
         return True
 
     def get_product(self, product_id):
-        """Retrieves a Product object by ID."""
-        return self._products.get(product_id)
+        """Retrieves a Product object by ID from the list."""
+        for product in self._products:
+            if product.product_id == product_id:
+                return product
+        return None
+
+    def update_stock(self, product_id, new_stock):
+        """Updates stock matching UML specification."""
+        product = self.get_product(product_id)
+        if product:
+            product.update_stock(new_stock)
+            self.save()
+            return True
+        return False
 
     def display_all(self):
-        """Displays all products stored in the inventory along with fulfillment and shipping info[cite: 19]."""
+        """Displays all products stored in the inventory list."""
         print("\nCurrent Inventory")
         print("-" * 50)
         if not self._products:
             print("Inventory is currently empty.")
         else:
-            for product in self._products.values():
+            for product in self._products:
                 product.display_information()
                 print(f"  -> Fulfillment: {product.get_fulfilment_info()}")
                 if isinstance(product, CanBeShipped):
@@ -98,7 +110,7 @@ class Inventory:
                 print("-" * 50)
 
     def search_product(self, product_id):
-        """Searches and displays a specific product by its ID[cite: 19]."""
+        """Searches and displays a specific product by its ID."""
         print("\nSearch Product")
         product = self.get_product(product_id)
         if product:
