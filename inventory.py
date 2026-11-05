@@ -8,12 +8,11 @@ FILENAME = "inventory.json"
 
 class Inventory:
     def __init__(self, filename: str = FILENAME):
-        """Aggregation collection with type hint"""
-        self.products: list[Product] = []  
+        self.products: list[Product] = []  # Aggregation collection with type hint
         self.filename: str = filename
         
-        """Create a default supplier for items loaded or initialized without one"""
-        self.default_supplier: Supplier = Supplier("S001", "TechCorp Supplies", "support@techcorp.com")
+        # Default supplier for items initialized or loaded without one
+        self.default_supplier: Supplier = Supplier("S001", "Global Tech Supplies", "support@globaltech.com")
         self.load()
 
     def load(self) -> None:
@@ -50,7 +49,7 @@ class Inventory:
             except Exception as e:
                 print(f"Error loading {self.filename}: {e}")
 
-        """Initialize default products if file doesn't exist or is empty"""
+        # Initialize default products if file doesn't exist or is empty
         default_data = {
             "P001": {"type": "physical", "name": "Laptop", "price": 1200.00, "stock": 15, "weight": 2.5},
             "P002": {"type": "digital", "name": "OS License", "price": 150.00, "stock": 50, "download_size": 4500.0},
@@ -87,7 +86,7 @@ class Inventory:
         return True
 
     def remove_product(self, product_id: str) -> None:
-        """Removes a Product reference from the inventory collection without destroying the object."""
+        """Removes a Product reference from the inventory collection."""
         product = self.find_product(product_id)
         if product:
             self.products.remove(product)

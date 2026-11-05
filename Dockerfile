@@ -1,10 +1,8 @@
 FROM python:3.11-slim
 
-
 WORKDIR /app
 
+# Copy all project files into the container
+COPY . .
 
-COPY inventory_manager.py .
-
-
-CMD ["python", "-u", "inventory_manager.py"]
+CMD ["python", "main.py"]

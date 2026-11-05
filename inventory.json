@@ -1,37 +1,44 @@
 {
     "P001": {
-        "type": "physical",
         "name": "Gaming Laptop",
         "price": 1200.0,
         "stock": 15,
+        "type": "physical",
         "weight": 2.5
     },
     "P002": {
-        "type": "digital",
         "name": "Antivirus License",
         "price": 45.5,
         "stock": 100,
+        "type": "digital",
         "download_size": 250.0
     },
     "P003": {
-        "type": "physical",
         "name": "Mechanical Keyboard",
         "price": 85.0,
         "stock": 25,
+        "type": "physical",
         "weight": 0.9
     },
     "P004": {
-        "type": "physical",
         "name": "Mouse",
         "price": 10.0,
         "stock": 10,
+        "type": "physical",
         "weight": 2.0
     },
     "P005": {
-        "type": "digital",
         "name": "Windows 10",
         "price": 30.0,
         "stock": 20,
+        "type": "digital",
         "download_size": 100.0
+    },
+    "P999": {
+        "name": "Wireless Mouse",
+        "price": 25.0,
+        "stock": 50,
+        "type": "physical",
+        "weight": 0.3
     }
 }

@@ -1,5 +1,6 @@
 from inventory import Inventory
 from product import PhysicalProduct, DigitalProduct
+from supplier import Supplier
 
 
 def display_menu():
@@ -15,10 +16,13 @@ def display_menu():
 
 def main():
     print("=" * 45)
-    print("INVENTORY MANAGEMENT SYSTEM (LAB 7 TARGET DESIGN)")
+    print("INVENTORY MANAGEMENT SYSTEM (LAB 8 TARGET DESIGN)")
     print("=" * 45 + "\n")
 
     inventory = Inventory()
+    
+    # Default supplier for newly added products through the CLI menu
+    default_supplier = Supplier("S001", "Global Tech Supplies", "support@globaltech.com")
 
     while True:
         display_menu()
@@ -37,11 +41,11 @@ def main():
                 prod_type = input("Product Type - Enter '1' for Physical, '2' for Digital: ").strip()
                 if prod_type == "1":
                     weight = float(input("Weight (kg): "))
-                    new_prod = PhysicalProduct(product_id, name, price, stock, weight)
+                    new_prod = PhysicalProduct(product_id, name, price, stock, weight, default_supplier)
                     inventory.add_product(new_prod)
                 elif prod_type == "2":
                     download_size = float(input("Download Size (MB): "))
-                    new_prod = DigitalProduct(product_id, name, price, stock, download_size)
+                    new_prod = DigitalProduct(product_id, name, price, stock, download_size, default_supplier)
                     inventory.add_product(new_prod)
                 else:
                     print("Invalid product type selection. Product not added.")
@@ -50,7 +54,7 @@ def main():
         elif choice == "3":
             print("\nUpdate Stock")
             product_id = input("Enter Product ID: ").strip()
-            product = inventory.get_product(product_id)
+            product = inventory.find_product(product_id)
             if product:
                 print(f"\nProduct Found: {product.name} (Current Stock: {product.stock})")
                 try:
