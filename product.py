@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from supplier import Supplier
 
 class CanBeShipped(ABC):
     @abstractmethod
@@ -9,11 +9,16 @@ class CanBeShipped(ABC):
 
 
 class Product(ABC):
-    def __init__(self, product_id, name, price, stock):
+    def __init__(self, product_id, name, price, stock, supplier: Supplier):
         self._product_id = product_id
         self._name = name
         self._price = float(price)
         self._stock = int(stock)
+        self._supplier = supplier
+
+    @property
+    def price(self) -> float:
+        return self._price
 
     @property
     def product_id(self):
@@ -45,6 +50,8 @@ class Product(ABC):
             f"ID: {self._product_id} | Name: {self._name} | "
             f"Price: ${self._price:.2f} | Stock: {self._stock}"
         )
+        print("Supplier Information:")
+        self._supplier.display_information()
 
     @abstractmethod
     def get_fulfilment_info(self) -> str:
@@ -61,8 +68,8 @@ class Product(ABC):
 
 
 class PhysicalProduct(Product, CanBeShipped):
-    def __init__(self, product_id, name, price, stock, weight):
-        super().__init__(product_id, name, price, stock)
+    def __init__(self, product_id, name, price, stock, weight, supplier: Supplier):
+        super().__init__(product_id, name, price, stock, supplier)
         self._weight = float(weight)
 
     def display_information(self):
@@ -82,8 +89,8 @@ class PhysicalProduct(Product, CanBeShipped):
 
 
 class DigitalProduct(Product):
-    def __init__(self, product_id, name, price, stock, download_size):
-        super().__init__(product_id, name, price, stock)
+    def __init__(self, product_id, name, price, stock, download_size, supplier: Supplier):
+        super().__init__(product_id, name, price, stock, supplier)
         self._download_size = float(download_size)
 
     def display_information(self):
