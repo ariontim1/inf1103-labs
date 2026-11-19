@@ -9,6 +9,9 @@ class OrderLine:
         self.product: Product = product
         self.quantity: int = quantity
 
+    def calculate_subtotal(self) -> float:
+        return self.product.price * self.quantity
+
 
 class Order:
     def __init__(self, order_id: str, discount: DiscountStrategy | None = None):

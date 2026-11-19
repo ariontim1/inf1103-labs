@@ -26,6 +26,14 @@ def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
                     price = float(row[3].strip())
                     stock = int(row[4].strip())
 
+                    extra = 0.0
+                    if len(row) >= 6 and row[5].strip() != "":
+                        extra = float(row[5].strip())
+
+                    if inventory.find_product(prod_id) is not None:
+                        print(f"Skipping row {row_num}: Product ID '{prod_id}' already exists.")
+                        continue
+
                     product = ProductFactory.create(
                         product_type=prod_type,
                         product_id=prod_id,
@@ -33,6 +41,7 @@ def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
                         price=price,
                         stock_quantity=stock,
                         supplier=supplier,
+                        extra=extra,
                     )
                     if inventory.add_product(product):
                         loaded += 1
@@ -41,3 +50,16 @@ def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
         print(f"{loaded} products loaded.")
     finally:
         print("Load attempt finished.")
+
+
+def get_positive_float(prompt: str) -> float:
+    """Prompts until the user enters a valid float greater than zero."""
+    while True:
+        try:
+            value = float(input(prompt))
+            if value <= 0:
+                print("Please enter a number greater than zero.")
+                continue
+            return value
+        except ValueError:
+            print("Please enter a valid number, e.g. 12.50")
