@@ -37,7 +37,7 @@ def main():
             try:
                 price = float(input("Price: "))
                 stock = int(input("Stock Quantity: "))
-                
+
                 prod_type = input("Product Type - Enter '1' for Physical, '2' for Digital: ").strip()
                 if prod_type == "1":
                     weight = float(input("Weight (kg): "))
@@ -49,8 +49,8 @@ def main():
                     inventory.add_product(new_prod)
                 else:
                     print("Invalid product type selection. Product not added.")
-            except ValueError:
-                print("Invalid input for numerical fields.")
+            except ValueError as e:
+                print(f"Error: {e}")
         elif choice == "3":
             print("\nUpdate Stock")
             product_id = input("Enter Product ID: ").strip()
@@ -61,8 +61,8 @@ def main():
                     new_stock = int(input("New Stock Quantity: "))
                     inventory.update_stock(product_id, new_stock)
                     print("\nStock updated successfully!")
-                except ValueError:
-                    print("Error: Stock must be a valid integer.")
+                except ValueError as e:
+                    print(f"Error: {e}")
             else:
                 print("\nProduct not found.")
         elif choice == "4":

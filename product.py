@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from supplier import Supplier
 
+
 class CanBeShipped(ABC):
     @abstractmethod
     def calculate_shipping_cost(self) -> float:
@@ -10,10 +11,17 @@ class CanBeShipped(ABC):
 
 class Product(ABC):
     def __init__(self, product_id, name, price, stock, supplier: Supplier):
+        price_val = float(price)
+        stock_val = int(stock)
+        if price_val <= 0:
+            raise ValueError("Price must be greater than zero.")
+        if stock_val < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+
         self._product_id = product_id
         self._name = name
-        self._price = float(price)
-        self._stock = int(stock)
+        self._price = price_val
+        self._stock = stock_val
         self._supplier = supplier
 
     @property
@@ -38,7 +46,10 @@ class Product(ABC):
 
     @stock.setter
     def stock(self, value):
-        self._stock = int(value)
+        stock_val = int(value)
+        if stock_val < 0:
+            raise ValueError("Stock quantity cannot be negative.")
+        self._stock = stock_val
 
     def update_stock(self, new_stock):
         """Updates the stock quantity of the product."""

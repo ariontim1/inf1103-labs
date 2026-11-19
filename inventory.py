@@ -1,5 +1,6 @@
 from supplier import Supplier
-from product import Product, PhysicalProduct, DigitalProduct, CanBeShipped
+from product import Product, CanBeShipped
+from factory import ProductFactory
 import json
 import os
 
@@ -8,8 +9,11 @@ FILENAME = "inventory.json"
 
 class Inventory:
     def __init__(self, filename: str = FILENAME):
+        """Aggregation collection with type hint"""
+        self.products: list[Product] = []
         self.products: list[Product] = []  # Aggregation collection with type hint
         self.filename: str = filename
+        self.default_supplier: Supplier = Supplier("S001", "TechCorp Supplies", "support@techcorp.com")
         
         # Default supplier for items initialized or loaded without one
         self.default_supplier: Supplier = Supplier("S001", "Global Tech Supplies", "support@globaltech.com")
@@ -25,24 +29,20 @@ class Inventory:
                         self.products = []
                         for pid, details in data.items():
                             prod_type = details.get("type", "physical")
-                            if prod_type == "physical":
-                                prod = PhysicalProduct(
-                                    product_id=pid,
-                                    name=details["name"],
-                                    price=details["price"],
-                                    stock=details["stock"],
-                                    weight=details.get("weight", 1.0),
-                                    supplier=self.default_supplier
-                                )
-                            else:
-                                prod = DigitalProduct(
-                                    product_id=pid,
-                                    name=details["name"],
-                                    price=details["price"],
-                                    stock=details["stock"],
-                                    download_size=details.get("download_size", 100.0),
-                                    supplier=self.default_supplier
-                                )
+                            extra = (
+                                float(details.get("weight", 1.0))
+                                if prod_type == "physical"
+                                else float(details.get("download_size", 100.0))
+                            )
+                            prod = ProductFactory.create(
+                                product_type=prod_type,
+                                product_id=pid,
+                                name=details["name"],
+                                price=details["price"],
+                                stock_quantity=details["stock"],
+                                supplier=self.default_supplier,
+                                extra=extra,
+                            )
                             self.products.append(prod)
                         print(f"{self.filename} found and loaded successfully.")
                         return
@@ -57,10 +57,16 @@ class Inventory:
         }
         self.products = []
         for pid, details in default_data.items():
-            if details["type"] == "physical":
-                prod = PhysicalProduct(pid, details["name"], details["price"], details["stock"], details["weight"], self.default_supplier)
-            else:
-                prod = DigitalProduct(pid, details["name"], details["price"], details["stock"], details["download_size"], self.default_supplier)
+            extra = details["weight"] if details["type"] == "physical" else details["download_size"]
+            prod = ProductFactory.create(
+                product_type=details["type"],
+                product_id=pid,
+                name=details["name"],
+                price=details["price"],
+                stock_quantity=details["stock"],
+                supplier=self.default_supplier,
+                extra=extra,
+            )
             self.products.append(prod)
         self.save()
         print(f"{self.filename} initialized with default items.")
