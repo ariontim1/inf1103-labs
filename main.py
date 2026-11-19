@@ -2,6 +2,17 @@ from inventory import Inventory
 from supplier import Supplier
 from factory import ProductFactory
 
+def get_positive_float(prompt: str) -> float:
+    while True:
+        try:
+            value = float(input(prompt))
+            if value <= 0:
+                print("Please enter a number greater than zero.")
+                continue
+            return value
+        except ValueError:
+            print("Please enter a valid number, e.g. 12.50")
+
 
 def display_menu():
     print("\n--------- MENU ---------")
